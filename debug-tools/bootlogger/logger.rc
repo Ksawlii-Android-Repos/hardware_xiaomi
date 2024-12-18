@@ -1,0 +1,17 @@
+service logdump /system/system_ext/bin/logger /data/debug boot
+    user root
+    oneshot
+    disabled
+
+service logdump-system /system/system_ext/bin/logger /data/debug system
+    user root
+    setenv LOGGER_MODE_SYSTEM 1
+    oneshot
+    disabled
+
+on post-fs-data
+    mkdir /data/debug 0755 root root encryption=None
+    start logdump
+
+on property:sys.boot_completed=1 && property:persist.ext.logdump.enabled=true
+    start logdump-system
